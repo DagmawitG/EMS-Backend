@@ -6,7 +6,7 @@ from flask_restful import Api
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../database.db'
 app.config['SECRET_KEY'] = 'oursupersecretkey'
 
 db = SQLAlchemy(app)
@@ -23,3 +23,7 @@ def db_create():
 def db_create():
     db.drop_all()
     print("DB Dropped")
+
+from ems import employee
+
+api.add_resource(employee.EmployeeAPI, '/employees', '/employees/<int:employee_id>')

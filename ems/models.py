@@ -1,5 +1,7 @@
+from datetime import datetime
 from ems import db, login_manager
 from flask_login import UserMixin
+from flask_restful import fields
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -13,22 +15,24 @@ class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-    date_of_birth = db.Column(db.DateTime, nullable=False)
+    #date_of_birth = db.Column(db.DateTime, nullable=True, default=datetime.now)
+    date_of_birth = db.Column(db.String, nullable=False)
     hourly_rate = db.Column(db.Float, nullable=False)
     department_id = db.Column(db.Integer, db.ForeignKey('department.id') ,nullable=False)
 
-    attendance = db.relationship('Attendance', backref='attend', lazy='True')
-    bonus = db.relationship('Bonus', backref='bonus', lazy='True')
-    salary = db.relationship('Salary', backref='salary', lazy='True')
+    attendance = db.relationship('Attendance', backref='attend', lazy=True)
+    bonus = db.relationship('BonusCuts', backref='bonus', lazy=True)
+    salary = db.relationship('Salary', backref='salary', lazy=True)
 
     def __repr__(self):
         return f"Employee('{self.first_name}', '{self.last_name}', '{self.department_id}')"
+
 
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     department_title = db.Column(db.String, nullable=False)
     no_of_employees = db.Column(db.Integer, nullable=False)
-    employees = db.relationship('Employee', backref='works', lazy='True')
+    employees = db.relationship('Employee', backref='works', lazy=True)
 
     def __repr__(self):
         return f"Department('{self.department_title}', '{self.no_of_employees}')"
@@ -42,7 +46,7 @@ class Attendance(db.Model):
 
 class BonusCuts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     amount = db.Column(db.Float, nullable=False)
     remark = db.Column(db.String, nullable=False)
     employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
@@ -52,7 +56,7 @@ class BonusCuts(db.Model):
 
 class Salary(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     amount = db.Column(db.Float, nullable=False)
     tax = db.Column(db.Float, nullable=False)
     net = db.Column(db.Float, nullable=False)
@@ -61,4 +65,49 @@ class Salary(db.Model):
     def __repr__(self):
         return f"Employee('{self.date}', '{self.amount}', '{self.net}', '{self.employee_id}')"
 
+user_fields = {
+    'id' : fields.Integer,
+    'user_role' : fields.String
+}
 
+attendance_fields = {
+    'id' : fields.Integer,
+    'employee_id' : fields.Integer
+}
+
+bonus_fields = {
+    'id' : fields.Integer,
+    'date' : fields.DateTime,
+    'amount' : fields.Float,
+    'remark' : fields.String,
+    'employee_id' : fields.Integer
+}
+
+salary_fields = {
+    'id' : fields.Integer,
+    'date' : fields.DateTime,
+    'amount' : fields.Float,
+    'tax' : fields.Float,
+    'net' : fields.Float,
+    'employee_id' : fields.Integer
+}
+
+employee_fields = {
+    'id' : fields.Integer,
+    'first_name' : fields.String,
+    'last_name' : fields.String,
+    'date_of_birth' : fields.String,
+    #'date_of_birth' : fields.DateTime,
+    'hourly_rate' : fields.Float,
+    'department_id' : fields.Integer,
+    'attendance' : fields.Nested(attendance_fields),
+    'bonus' : fields.Nested(bonus_fields),
+    'salary' : fields.Nested(salary_fields)
+}
+
+department_fields = {
+    'id' : fields.Integer,
+    'department_title' : fields.String,
+    'no_of_employees' : fields.Integer,
+    'employees' : fields.Nested(employee_fields)
+}

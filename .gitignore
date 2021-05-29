@@ -2,7 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-.vscode
 
 
 # C extensions
@@ -128,8 +127,9 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
-<<<<<<< HEAD
 .pyre/
-=======
-.pyre/
->>>>>>> 87a8137c53681134b31a45ded534186eecb31ded
+
+# vscode
+.vscode/
+.vscode
+database.db

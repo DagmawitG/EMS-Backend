@@ -1,4 +1,3 @@
-import re
 from flask import request
 from flask.json import jsonify
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with

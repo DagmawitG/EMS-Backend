@@ -24,6 +24,7 @@ def db_create():
     db.drop_all()
     print("DB Dropped")
 
-from ems import employee
+from ems import employee, department
 
 api.add_resource(employee.EmployeeAPI, '/employees', '/employees/<int:employee_id>')
+api.add_resource(department.DepartmentAPI, '/departments', '/departments/<int:dept_id>')

@@ -55,7 +55,7 @@ class DepartmentAPI(Resource):
 
     @marshal_with(department_fields)
     def delete(self, dept_id):
-        dept = Employee.query.filter_by(id=dept_id).first()
+        dept = Department.query.filter_by(id=dept_id).first()
         if dept:
             db.session.delete(dept)
             db.session.commit()

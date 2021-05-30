@@ -45,10 +45,12 @@ class EmployeeAPI(Resource):
             return response
 
     # @marshal_with(employee_fields)
-    @token_required
-    def get(self, currentUser, employee_id=None):
+    @token_required_admin
+    def get(currentUser, employee_id=None):
         if not currentUser.user_role == "admin":
             return jsonify({'message' : 'You are not authorized'})
+            
+        return "hello"
 
         # if employee_id:
         #     employee = Employee.query.filter_by(id=employee_id).first()

@@ -8,22 +8,49 @@ import datetime
 
 bp = Blueprint('auth', __name__)
 
-def token_required(f):
+def token_required_admin(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
         if not token:
-            return jsonify({'message': 'Token is missing'}), 401
+            return {'message': 'Token is missing'}, 403
+
+        print(request.headers['x-access-token'])
 
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
             currentUser = User.query.filter_by(id=data['id']).first()
         except:
-            return jsonify({'message': 'Token is invalid'}), 401
+            return {'message': 'Token is invalid'}, 401
 
-        return f(currentUser, *args, **kwargs)
+        if not currentUser.user_role == "admin":
+            return {'message' : 'You are not authorized'}
+
+        return f(*args, **kwargs)
+
+    return decorated
+
+def token_required_hr(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        if not token:
+            return {'message': 'Token is missing'}, 403
+
+        print(request.headers['x-access-token'])
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            currentUser = User.query.filter_by(id=data['id']).first()
+        except:
+            return {'message': 'Token is invalid'}, 401
+
+        if not currentUser.user_role == "hr":
+            return {'message' : 'You are not authorized'}
+            
+        return f(*args, **kwargs)
 
     return decorated
 
@@ -44,15 +71,15 @@ def login():
 
         if bcrypt.check_password_hash(user.password, auth.password):
             if user.user_role == "admin":
-                token = jwt.encode({'id' : user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
-                login_user(user)
+                token = jwt.encode({'id' : user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm="HS256")
+                # login_user(user)
                 session["type"] = user.user_role
                 # return jsonify({'message': "admin login successful"})
                 return jsonify({'token': token})
                 
             elif user.user_role == "hr":
-                token = jwt.encode({'id' : user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
-                login_user(user)
+                token = jwt.encode({'id' : user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm="HS256")
+                # login_user(user)
                 session["type"] = user.user_role
                 # return jsonify({'message': "hr login successful"})
                 return jsonify({'token': token})
@@ -92,6 +119,6 @@ def login():
 
 @bp.route('/logout', methods=['POST'])
 def logout():
-    logout_user()
+    # logout_user()
     session["type"] = ""
     return jsonify({'message': "Logged out successfully"})  

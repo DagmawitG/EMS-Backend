@@ -3,12 +3,12 @@ from flask import session
 from ems import db, login_manager, ma
 from flask_login import UserMixin
 
-@login_manager.user_loader
-def load_user(id):
-    if session["type"] =="admin":
-        return User.query.get(int(id))
-    elif session["type"] == "hr":
-        return User.query.get(int(id))
+# @login_manager.user_loader
+# def load_user(id):
+#     if session["type"] =="admin":
+#         return User.query.get(int(id))
+#     elif session["type"] == "hr":
+#         return User.query.get(int(id))
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

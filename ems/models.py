@@ -1,20 +1,30 @@
 from datetime import datetime
-from ems import db, login_manager
+from flask import session
+from ems import db, login_manager, ma
 from flask_login import UserMixin
-from flask_restful import fields
+
+@login_manager.user_loader
+def load_user(id):
+    if session["type"] =="admin":
+        return User.query.get(int(id))
+    elif session["type"] == "hr":
+        return User.query.get(int(id))
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
     user_role = db.Column(db.String, nullable=False)
 
     def __repr__(self):
-        return f"User('{self.user_role}')"
+        return f"User('{self.username}' ,'{self.user_role}')"
 
 
 class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
     #date_of_birth = db.Column(db.DateTime, nullable=True, default=datetime.now)
     date_of_birth = db.Column(db.String, nullable=False)
     hourly_rate = db.Column(db.Float, nullable=False)
@@ -25,7 +35,7 @@ class Employee(db.Model):
     salary = db.relationship('Salary', backref='salary', lazy=True)
 
     def __repr__(self):
-        return f"Employee('{self.first_name}', '{self.last_name}', '{self.department_id}')"
+        return f"Employee('{self.first_name}', '{self.last_name}', '{self.email}' ,'{self.department_id}')"
 
 
 class Department(db.Model):
@@ -65,49 +75,10 @@ class Salary(db.Model):
     def __repr__(self):
         return f"Salary('{self.date}', '{self.amount}', '{self.net}', '{self.employee_id}')"
 
-user_fields = {
-    'id' : fields.Integer,
-    'user_role' : fields.String
-}
 
-attendance_fields = {
-    'id' : fields.Integer,
-    'employee_id' : fields.Integer
-}
+class EmployeeSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'first_name', 'last_name', 'email', 'date_of_birth', 'hourly_rate', 'department_id', 'attendance', 'bonus', 'salary')
 
-bonus_fields = {
-    'id' : fields.Integer,
-    'date' : fields.DateTime,
-    'amount' : fields.Float,
-    'remark' : fields.String,
-    'employee_id' : fields.Integer
-}
-
-salary_fields = {
-    'id' : fields.Integer,
-    'date' : fields.DateTime,
-    'amount' : fields.Float,
-    'tax' : fields.Float,
-    'net' : fields.Float,
-    'employee_id' : fields.Integer
-}
-
-employee_fields = {
-    'id' : fields.Integer,
-    'first_name' : fields.String,
-    'last_name' : fields.String,
-    'date_of_birth' : fields.String,
-    #'date_of_birth' : fields.DateTime,
-    'hourly_rate' : fields.Float,
-    'department_id' : fields.Integer,
-    'attendance' : fields.Nested(attendance_fields),
-    'bonus' : fields.Nested(bonus_fields),
-    'salary' : fields.Nested(salary_fields)
-}
-
-department_fields = {
-    'id' : fields.Integer,
-    'department_title' : fields.String,
-    'no_of_employees' : fields.Integer,
-    'employees' : fields.Nested(employee_fields)
-}
+employee_schema = EmployeeSchema()
+employees_schema = EmployeeSchema(many=True)

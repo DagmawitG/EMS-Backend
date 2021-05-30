@@ -70,6 +70,6 @@ class DepartmentAPI(Resource):
         if dept:
             db.session.delete(dept)
             db.session.commit()
-            return jsonify("Department successfully deleted"), 204
+            return {'message': 'Department successfully deleted'}, 204
         else:
             abort(404, "No department with that Id")

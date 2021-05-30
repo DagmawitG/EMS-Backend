@@ -28,7 +28,7 @@ class Employee(db.Model):
     #date_of_birth = db.Column(db.DateTime, nullable=True, default=datetime.now)
     date_of_birth = db.Column(db.String, nullable=False)
     hourly_rate = db.Column(db.Float, nullable=False)
-    department_id = db.Column(db.Integer, db.ForeignKey('department.id') ,nullable=False)
+    department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
 
     attendance = db.relationship('Attendance', backref='attend', lazy=True)
     bonus = db.relationship('BonusCuts', backref='bonus', lazy=True)
@@ -80,5 +80,12 @@ class EmployeeSchema(ma.Schema):
     class Meta:
         fields = ('id', 'first_name', 'last_name', 'email', 'date_of_birth', 'hourly_rate', 'department_id', 'attendance', 'bonus', 'salary')
 
+class DepartmentSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'department_title', 'no_of_employees', 'employees')
+
 employee_schema = EmployeeSchema()
 employees_schema = EmployeeSchema(many=True)
+
+department_schema = EmployeeSchema()
+departments_schema = EmployeeSchema(many=True)

@@ -4,7 +4,7 @@ from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from werkzeug.wrappers import response
 from ems.models import *
 from ems.auth import *
-# from ems.resource_fields import *
+from ems.resource_fields import *
 
 class EmployeeAPI(Resource):
     # @marshal_with(employee_fields)
@@ -50,26 +50,24 @@ class EmployeeAPI(Resource):
         if not currentUser.user_role == "admin":
             return jsonify({'message' : 'You are not authorized'})
             
-        return "hello"
-
-        # if employee_id:
-        #     employee = Employee.query.filter_by(id=employee_id).first()
-        #     if employee:
-        #         result = employee_schema.dump(employee)
-        #         response = jsonify(result)
-        #         response.status_code = 200
-        #         return response
-        #     else:
-        #         abort(404, "No employee found")
-        # else:
-        #     employee = Employee.query.all()
-        #     if employee:
-        #         result = employees_schema.dump(employee)
-        #         response = jsonify(result)
-        #         response.status_code = 200
-        #         return response
-        #     else:
-        #         abort(404, "No employees found")
+        if employee_id:
+            employee = Employee.query.filter_by(id=employee_id).first()
+            if employee:
+                result = employee_schema.dump(employee)
+                response = jsonify(result)
+                response.status_code = 200
+                return response
+            else:
+                abort(404, "No employee found")
+        else:
+            employee = Employee.query.all()
+            if employee:
+                result = employees_schema.dump(employee)
+                response = jsonify(result)
+                response.status_code = 200
+                return response
+            else:
+                abort(404, "No employees found")
 
     # @marshal_with(employee_fields)
     def put(self, employee_id):

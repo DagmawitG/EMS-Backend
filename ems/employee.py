@@ -6,17 +6,24 @@ from ems.models import *
 class EmployeeAPI(Resource):
     @marshal_with(employee_fields)
     def post(self):
-        first_name = request.form['first_name']
-        employee = Employee.query.filter_by(first_name=first_name).first()
-
-        if employee:
-            abort(409, message='Employee already exists')
+        if request.is_json:
+            first_name = request.json['first_name']
+            last_name = request.json['last_name']
+            date_of_birth = request.json['date_of_birth']
+            hourly_rate = request.json['hourly_rate']
+            department_id = request.json['department_id']
         else:
+            first_name = request.form['first_name']
             last_name = request.form['last_name']
             date_of_birth = request.form['date_of_birth']
             hourly_rate = request.form['hourly_rate']
             department_id = request.form['department_id']
 
+        employee = Employee.query.filter_by(first_name=first_name).first()
+
+        if employee:
+            abort(409, message='Employee already exists')
+        else:
             new_employee = Employee(first_name=first_name,
                                     last_name=last_name,
                                     date_of_birth=date_of_birth,
@@ -47,11 +54,18 @@ class EmployeeAPI(Resource):
     def put(self, employee_id):
         employee = Employee.query.filter_by(id=employee_id).first()
         if employee:
-            first_name = request.form['first_name']
-            last_name = request.form['last_name']
-            date_of_birth = request.form['date_of_birth']
-            hourly_rate = request.form['hourly_rate']
-            department_id = request.form['department_id']
+            if request.is_json:
+                first_name = request.json['first_name']
+                last_name = request.json['last_name']
+                date_of_birth = request.json['date_of_birth']
+                hourly_rate = request.json['hourly_rate']
+                department_id = request.json['department_id']
+            else:
+                first_name = request.form['first_name']
+                last_name = request.form['last_name']
+                date_of_birth = request.form['date_of_birth']
+                hourly_rate = request.form['hourly_rate']
+                department_id = request.form['department_id']
             
             employee.first_name=first_name
             employee.last_name=last_name

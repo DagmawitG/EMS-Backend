@@ -6,14 +6,18 @@ from ems.models import *
 class DepartmentAPI(Resource):
     @marshal_with(department_fields)
     def post(self):
-        title = request.form['department_title']
+        if request.is_json:
+            title = request.json['department_title']
+            no_of_employees = request.json['no_of_employees']
+        else:
+            title = request.form['department_title']
+            no_of_employees = request.form['no_of_employees']
+
         dept = Department.query.filter_by(department_title=title).first()
 
         if dept:
             abort(409, message='Department already exists')
         else:
-            no_of_employees = request.form['no_of_employees']
-
             new_dept = Department(department_title=title,
                                   no_of_employees=no_of_employees)
             
@@ -40,9 +44,14 @@ class DepartmentAPI(Resource):
     @marshal_with(department_fields)
     def put(self, dept_id):
         dept = Department.query.filter_by(id=dept_id).first()
+
         if dept:
-            title = request.form['department_title']
-            no_of_employees = request.form['no_of_employees']
+            if request.is_json:
+                title = request.json['department_title']
+                no_of_employees = request.json['no_of_employees']
+            else:
+                title = request.form['department_title']
+                no_of_employees = request.form['no_of_employees']
 
             dept.department_title = title
             dept.no_of_employees = no_of_employees

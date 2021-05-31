@@ -8,6 +8,7 @@ from ems.resource_fields import *
 
 class EmployeeAPI(Resource):
     # @marshal_with(employee_fields)
+    @token_required_admin
     def post(self):
         if request.is_json:
             first_name = request.json['first_name']
@@ -46,10 +47,7 @@ class EmployeeAPI(Resource):
 
     # @marshal_with(employee_fields)
     @token_required_admin
-    def get(currentUser, employee_id=None):
-        if not currentUser.user_role == "admin":
-            return jsonify({'message' : 'You are not authorized'})
-            
+    def get(self, employee_id=None):
         if employee_id:
             employee = Employee.query.filter_by(id=employee_id).first()
             if employee:
@@ -70,6 +68,7 @@ class EmployeeAPI(Resource):
                 abort(404, "No employees found")
 
     # @marshal_with(employee_fields)
+    @token_required_admin
     def put(self, employee_id):
         employee = Employee.query.filter_by(id=employee_id).first()
         if employee:
@@ -105,6 +104,7 @@ class EmployeeAPI(Resource):
             abort(404, "No employee with that Id")
 
     # @marshal_with(employee_fields)
+    @token_required_admin
     def delete(self, employee_id):
         employee = Employee.query.filter_by(id=employee_id).first()
         if employee:

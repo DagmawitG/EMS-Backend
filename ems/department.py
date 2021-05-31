@@ -7,6 +7,7 @@ from ems.resource_fields import *
 
 class DepartmentAPI(Resource):
     @marshal_with(department_fields)
+    @token_required_hr
     def post(self):
         if request.is_json:
             title = request.json['department_title']
@@ -29,6 +30,7 @@ class DepartmentAPI(Resource):
             return new_dept, 201
 
     @marshal_with(department_fields)
+    @token_required_hr
     def get(self, dept_id=None):
         if dept_id:
             dept = Department.query.filter_by(id=dept_id).first()
@@ -44,6 +46,7 @@ class DepartmentAPI(Resource):
                 abort(404, "No departments found")
 
     @marshal_with(department_fields)
+    @token_required_hr
     def put(self, dept_id):
         dept = Department.query.filter_by(id=dept_id).first()
 
@@ -65,6 +68,7 @@ class DepartmentAPI(Resource):
             abort(404, "No department with that Id")
 
     @marshal_with(department_fields)
+    @token_required_hr
     def delete(self, dept_id):
         dept = Department.query.filter_by(id=dept_id).first()
         if dept:

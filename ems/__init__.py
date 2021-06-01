@@ -20,7 +20,7 @@ def db_create():
     print("DB Created")
 
 @app.cli.command('db_drop')
-def db_create():
+def db_drop():
     db.drop_all()
     print("DB Dropped")
 

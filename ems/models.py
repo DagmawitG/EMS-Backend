@@ -6,6 +6,8 @@ from flask_restful import fields
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     user_role = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
 
     def __repr__(self):
         return f"User('{self.user_role}')"
@@ -67,7 +69,9 @@ class Salary(db.Model):
 
 user_fields = {
     'id' : fields.Integer,
-    'user_role' : fields.String
+    'user_role' : fields.String,
+    'name' : fields.String,
+    'password' : fields.String
 }
 
 attendance_fields = {

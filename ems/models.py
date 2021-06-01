@@ -1,7 +1,15 @@
 from datetime import datetime
-from ems import db, login_manager
+from ems import db
+from ems import login_manager
 from flask_login import UserMixin
 from flask_restful import fields
+
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    def __repr__(self):
+        return f"Admin('{self.username}')"
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,6 +75,11 @@ class Salary(db.Model):
     def __repr__(self):
         return f"Salary('{self.date}', '{self.amount}', '{self.net}', '{self.employee_id}')"
 
+admin_fields = {
+    'id' : fields.Integer,
+    'username' : fields.String,
+    'password' : fields.String
+}
 user_fields = {
     'id' : fields.Integer,
     'user_role' : fields.String,

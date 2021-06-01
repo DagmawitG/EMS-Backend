@@ -4,11 +4,37 @@ from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from ems.models import *
 
 class AdministratorAPI(Resource):
+    @marshal_with(admin_fields)
+    def postadmin(self):
+        if request.is_json:
+            id = request.json['id']
+            username= request.json['username']
+            password = request.json['password']
+        else:
+            id = request.form['id']
+            username = request.form['username']
+            password = request.form['password']
+            
+
+        admin = Admin.query.filter_by(username=username).first()
+
+        if admin:
+            abort(409, message='Administrator already exists')
+        else:
+            new_admin = Admin(id=id,
+                                    nuserame=username,
+                                    password=password
+                                    )
+            
+            db.session.add(new_admin)
+            db.session.commit()
+
+            return new_admin, 201
     @marshal_with(user_fields)
     def post(self):
         if request.is_json:
             id = request.json['id']
-            name = request.json['name']
+            name= request.json['name']
             user_role = request.json['user_role']
             password = request.json['password']
         else:

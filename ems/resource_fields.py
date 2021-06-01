@@ -9,7 +9,8 @@ user_fields = {
 
 attendance_fields = {
     'id' : fields.Integer,
-    'employee_id' : fields.Integer
+    'employee_id' : fields.Integer,
+    'work_time': fields.Integer
 }
 
 bonus_fields = {

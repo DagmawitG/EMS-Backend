@@ -50,6 +50,7 @@ class Department(db.Model):
 class Attendance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
+    work_time = db.Column(db.Float, nullable=False)
 
     def __repr__(self):
         return f"Attendance('{self.employee_id}')"

@@ -36,19 +36,22 @@ def db_seed():
                        password=admin_password,
                        user_role="admin")
 
-    hr_password = bcrypt.generate_password_hash('hr').decode('utf-8')
-    hr = User(username="hr", 
-                       password=hr_password,
-                       user_role="hr")
+    manager_password = bcrypt.generate_password_hash('manager').decode('utf-8')
+    manager = User(username="manager", 
+                       password=manager_password,
+                       user_role="manager")
 
     db.session.add(super_admin)
-    db.session.add(hr)
+    db.session.add(manager)
     db.session.commit()
-    print("Super admin and hr added")
+    print("Super admin and manager added")
 
-from ems import employee, department, auth, routes
+from ems import employee, department, auth, routes, bonus_cuts, manager, salary
 
 app.register_blueprint(auth.bp)
 
 api.add_resource(employee.EmployeeAPI, '/employees', '/employees/<int:employee_id>')
+
 api.add_resource(department.DepartmentAPI, '/departments', '/departments/<int:dept_id>')
+
+api.add_resource(manager.ManagerAPI, '/managers', '/managers/<int:user_id>')

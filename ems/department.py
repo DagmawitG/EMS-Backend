@@ -1,12 +1,11 @@
 from flask import request, jsonify
-from flask_restful import Api, Resource, abort, marshal_with
+from flask_restful import Resource, abort
 from ems.models import *
 from ems.auth import *
-from ems.resource_fields import *
+from ems.schemas import *
 
 class DepartmentAPI(Resource):
-    @marshal_with(department_fields)
-    @token_required_hr
+    @token_required_manager
     def post(self):
         if request.is_json:
             title = request.json['department_title']
@@ -26,29 +25,36 @@ class DepartmentAPI(Resource):
             db.session.add(new_dept)
             db.session.commit()
 
-            return new_dept, 201
+            result = department_schema.dump(new_dept)
+            response = jsonify(result)
+            response.status_code = 200
+            return response
 
-    @marshal_with(department_fields)
-    @token_required_hr
+    @token_required_manager
     def get(self, dept_id=None):
         if dept_id:
             dept = Department.query.filter_by(id=dept_id).first()
             if dept:
-                return dept, 200
+                result = department_schema.dump(dept)
+                response = jsonify(result)
+                response.status_code = 201
+                return response
+
             else:
                 abort(404, "No department found")
         else:
             dept = Department.query.all()
             if dept:
-                return dept, 200
+                result = departments_schema.dump(dept)
+                response = jsonify(result)
+                response.status_code = 201
+                return response
             else:
                 abort(404, "No departments found")
 
-    @marshal_with(department_fields)
-    @token_required_hr
+    @token_required_manager
     def put(self, dept_id):
         dept = Department.query.filter_by(id=dept_id).first()
-
         if dept:
             if request.is_json:
                 title = request.json['department_title']
@@ -61,18 +67,21 @@ class DepartmentAPI(Resource):
             dept.no_of_employees = no_of_employees
 
             db.session.commit()
-            return dept, 200
-        
+
+            result = department_schema.dump(dept)
+            response = jsonify(result)
+            response.status_code = 201
+            return response
+
         else:
             abort(404, "No department with that Id")
 
-    @marshal_with(department_fields)
-    @token_required_hr
+    @token_required_manager
     def delete(self, dept_id):
         dept = Department.query.filter_by(id=dept_id).first()
         if dept:
             db.session.delete(dept)
             db.session.commit()
-            return {'message': 'Department successfully deleted'}, 204
+            return jsonify(message="Department successfully deleted"), 200
         else:
             abort(404, "No department with that Id")

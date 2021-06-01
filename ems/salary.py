@@ -1,11 +1,11 @@
-from flask import request
-from flask.json import jsonify
-from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
+from flask import request, jsonify
+from flask_restful import Resource, abort
 from ems.models import *
+from ems.schemas import *
+from ems.auth import *
 
 class SalaryAPI(Resource):
-    #Gets salary (16)
-    @marshal_with(salary_fields)
+    @token_required_manager
     def get(self, employee_id = None, date = None):
         if employee_id:
             salaries = Salary.query.filter_by(employee_id=employee_id)

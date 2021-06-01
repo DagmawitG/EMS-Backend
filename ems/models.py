@@ -75,18 +75,3 @@ class Salary(db.Model):
 
     def __repr__(self):
         return f"Salary('{self.date}', '{self.amount}', '{self.net}', '{self.employee_id}')"
-
-
-class EmployeeSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'first_name', 'last_name', 'email', 'date_of_birth', 'hourly_rate', 'department_id', 'attendance', 'bonus', 'salary')
-
-class DepartmentSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'department_title', 'no_of_employees', 'employees')
-
-employee_schema = EmployeeSchema()
-employees_schema = EmployeeSchema(many=True)
-
-department_schema = EmployeeSchema()
-departments_schema = EmployeeSchema(many=True)

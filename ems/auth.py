@@ -16,8 +16,6 @@ def token_required_admin(f):
         if not token:
             return {'message': 'Token is missing'}, 403
 
-        print(request.headers['x-access-token'])
-
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
             currentUser = User.query.filter_by(id=data['id']).first()
@@ -31,7 +29,7 @@ def token_required_admin(f):
 
     return decorated
 
-def token_required_hr(f):
+def token_required_manager(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if 'x-access-token' in request.headers:
@@ -39,15 +37,13 @@ def token_required_hr(f):
         if not token:
             return {'message': 'Token is missing'}, 403
 
-        print(request.headers['x-access-token'])
-
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
             currentUser = User.query.filter_by(id=data['id']).first()
         except:
             return {'message': 'Token is invalid'}, 401
 
-        if not currentUser.user_role == "hr":
+        if not currentUser.user_role == "manager":
             return {'message' : 'You are not authorized'}
             
         return f(*args, **kwargs)
@@ -77,7 +73,7 @@ def login():
                 # return jsonify({'message': "admin login successful"})
                 return jsonify({'token': token})
                 
-            elif user.user_role == "hr":
+            elif user.user_role == "manager":
                 token = jwt.encode({'id' : user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm="HS256")
                 # login_user(user)
                 session["type"] = user.user_role

@@ -1,13 +1,11 @@
 from flask import request, jsonify
-from flask_restful import Api, Resource, abort, marshal_with
-from werkzeug.wrappers import response
+from flask_restful import Resource, abort
 from ems.models import *
 from ems.auth import *
-from ems.resource_fields import *
+from ems.schemas import *
 
 class EmployeeAPI(Resource):
-    # @marshal_with(employee_fields)
-    @token_required_admin
+    @token_required_manager
     def post(self):
         if request.is_json:
             first_name = request.json['first_name']
@@ -44,8 +42,7 @@ class EmployeeAPI(Resource):
             response.status_code = 201
             return response
 
-    # @marshal_with(employee_fields)
-    @token_required_admin
+    @token_required_manager
     def get(self, employee_id=None):
         if employee_id:
             employee = Employee.query.filter_by(id=employee_id).first()
@@ -66,8 +63,7 @@ class EmployeeAPI(Resource):
             else:
                 abort(404, "No employees found")
 
-    # @marshal_with(employee_fields)
-    @token_required_admin
+    @token_required_manager
     def put(self, employee_id):
         employee = Employee.query.filter_by(id=employee_id).first()
         if employee:
@@ -94,6 +90,7 @@ class EmployeeAPI(Resource):
             employee.department_id=department_id
 
             db.session.commit()
+            
             result = employee_schema.dump(employee)
             response = jsonify(result)
             response.status_code = 201
@@ -102,13 +99,12 @@ class EmployeeAPI(Resource):
         else:
             abort(404, "No employee with that Id")
 
-    # @marshal_with(employee_fields)
-    @token_required_admin
+    @token_required_manager
     def delete(self, employee_id):
         employee = Employee.query.filter_by(id=employee_id).first()
         if employee:
             db.session.delete(employee)
             db.session.commit()
-            return jsonify("Employee successfully deleted"), 200
+            return jsonify(message="Employee successfully deleted"), 200
         else:
             abort(404, "No employee with that Id")

@@ -4,7 +4,6 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_restful import Api
 from flask_marshmallow import Marshmallow
-
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../database.db'
@@ -55,3 +54,5 @@ api.add_resource(employee.EmployeeAPI, '/employees', '/employees/<int:employee_i
 api.add_resource(department.DepartmentAPI, '/departments', '/departments/<int:dept_id>')
 
 api.add_resource(manager.ManagerAPI, '/managers', '/managers/<int:user_id>')
+
+from ems import seed

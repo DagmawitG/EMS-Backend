@@ -4,6 +4,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_restful import Api
 from flask_marshmallow import Marshmallow
+from ems.seed import *
 
 app = Flask(__name__)
 

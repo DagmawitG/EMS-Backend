@@ -58,12 +58,12 @@ def login():
     auth = request.authorization
 
     if not auth or not auth.username or not auth.password:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        return abort(404, "Could not verify")
 
     try:
         user = User.query.filter_by(username = auth.username).first()
         if not user:
-            return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+            return abort(404, "No user found")
 
         if bcrypt.check_password_hash(user.password, auth.password):
             if user.user_role == "admin":
@@ -80,8 +80,8 @@ def login():
                 # return jsonify({'message': "hr login successful"})
                 return jsonify({'token': token})
 
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-        
+        return jsonify(message="Invalid credentials")    
+            
     except Exception as e:
         return jsonify({'message': str(e)})
 

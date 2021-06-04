@@ -53,11 +53,11 @@ class Attendance(db.Model):
     work_time = db.Column(db.Float, nullable=False)
 
     def __repr__(self):
-        return f"Attendance('{self.employee_id}')"
+        return f"Attendance('{self.employee_id}', '{self.work_time}')"
 
 class BonusCuts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    date = db.Column(db.String, nullable=False)
     amount = db.Column(db.Float, nullable=False)
     remark = db.Column(db.String, nullable=False)
     employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'))

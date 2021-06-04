@@ -18,6 +18,7 @@ api = Api(app)
 ma = Marshmallow(app)
 
 from ems.models import User
+from ems.seed import *
 
 @app.cli.command('db_create')
 def db_create():
